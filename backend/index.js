@@ -1,12 +1,15 @@
 require("./src/configs/database");
 const express = require("express");
+const cors = require("cors");
+const bodyParser = require("body-parser");
 const app = express();
-const port = process.env.PORT || 3003;
-
 var userRoute= require('./src/routes/routes')
-
+app.use(cors());
 app.use('/',userRoute);
 
-app.listen(port, () => {
-    console.log(`app listening on port ${port}`)
-})
+
+const PORT = process.env.PORT || 3003;
+app.use(bodyParser.json());
+app.listen(PORT, () => {
+  console.log(`server is running on port ${PORT}`);
+});
