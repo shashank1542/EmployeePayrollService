@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import moment from 'moment';
 import './App.css';
-
+const backendUrl= "https://employeepayrollservice.onrender.com";
 function App() {
   const [search, setSearch] = useState('');
   const [users, setUsers] = useState([]);
@@ -10,7 +10,7 @@ function App() {
 
   useEffect(() => {
     // Fetch all users when the component mounts
-    axios.get('http://localhost:3000/importUser')
+    axios.get(`${backendUrl}/importUser`)
       .then(response => {
         setUsers(response.data);
         setFilteredUsers(response.data);
