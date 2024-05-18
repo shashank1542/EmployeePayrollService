@@ -32,7 +32,6 @@ const importUser = async (req,res)=>{
                     // Skip this entry or handle the error as appropriate
                 }else{
                 DailySalary = (workhour * HourlyRate)
-                console.log(DailySalary);
                 }
                 userData.push({
                     EmployeeID: response[x]['Employee ID'],

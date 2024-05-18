@@ -41,7 +41,7 @@ function App() {
     formData.append('file', file);
 
     try {
-      await axios.post(`http://localhost:3003/importUser`, formData, {
+      await axios.post(`${backendUrl}/importUser`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
