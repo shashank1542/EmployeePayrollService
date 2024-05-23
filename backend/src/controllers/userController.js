@@ -1,64 +1,67 @@
 
-var User= require('../models/User');
-var csv = require('csvtojson');
+const User = require('../models/User');
+const csv = require('csvtojson');
 const moment = require('moment');
+const XLSX = require('xlsx');
+const fs = require('fs');
 
+const importUser = async (req, res) => {
+  try {
+    let userData = [];
+    const filePath = req.file.path;
 
-
-const importUser = async (req,res)=>{
-    try{
-        var userData = [];
-        csv()
-        .fromFile(req.file.path)
-        .then(async(response)=>{
-            console.log(response[0])
-            
-            for(var x=0;x<response.length-1;x++){
-                
-                const timeString = response[x]['Working Hrs.'];
-                const timeObject = moment(timeString, 'HH:mm:ss');
-                const totaltime = (timeObject.hours() + timeObject.minutes() / 60);
-                const workhour = Math.round(totaltime*100)/100;
-                
-                // const timeString1 = response[x]['Break Hrs.'];
-                // const timeObject1 = moment(timeString1, 'HH:mm:ss');
-                // const breakhour = timeObject1.hours() + timeObject1.minutes() / 60;
-                const HourlyRate = 100;
-                // const penaltyRate = response[x]['Penalty Rate'];
-                let DailySalary= response[x].DailySalary;
-
-                if (isNaN(workhour)) {
-                    console.error(`Invalid data for calculation at index ${x}`);
-                    // Skip this entry or handle the error as appropriate
-                }else{
-                DailySalary = (workhour * HourlyRate)
-                }
-                userData.push({
-                    EmployeeID: response[x]['Employee ID'],
-                    EmployeeName: response[x]['Employee Name'],
-                    Date: response[x].Date,
-                    Day: response[x].Day,
-                    PunchInTime: response[x]['Punch In Time'],
-                    PunchOutTime: response[x]['Punch Out Time'],
-                    Status: response[x].Status,
-                    WorkingHrs: response[x]['Working Hrs.'],
-                    BreakHrs: response[x]['Break Hrs.'],
-                    HourlyRate: response[x]['Hourly Rate'],
-                    penaltyRate: response[x]['Penalty Rate'],
-                    DailySalary: DailySalary,
-                });
-                
-
-            }
-                
-            await User.insertMany(userData);
-        });
-        res.send({status:200,success:true,msg:"csv imported"});
-    }catch(error){
-        res.send({status:400,success:false,msg:error.message});
+    // Check file extension
+    const fileExtension = filePath.split('.').pop();
+    if (fileExtension === 'csv') {
+      // Handle CSV files
+      userData = await csv().fromFile(filePath);
+    } else if (fileExtension === 'xlsx') {
+      // Handle XLSX files
+      const workbook = XLSX.readFile(filePath);
+      const sheetName = workbook.SheetNames[0];
+      const sheet = workbook.Sheets[sheetName];
+      userData = XLSX.utils.sheet_to_json(sheet);
+    } else {
+      return res.status(400).json({ message: 'Unsupported file format' });
     }
-}
+
+    for (let x = 0; x < userData.length; x++) {
+      const timeString = userData[x]['Working Hrs.'];
+      const timeObject = moment(timeString, 'HH:mm:ss');
+      const totaltime = timeObject.hours() + timeObject.minutes() / 60;
+      const workhour = Math.round(totaltime * 100) / 100;
+
+      let DailySalary = userData[x].DailySalary;
+      if (isNaN(workhour)) {
+        // console.error(`Invalid data for calculation at index ${x}`);
+      } else {
+        DailySalary = workhour * 100; // Assuming hourly rate is 100
+      }
+
+      userData[x] = {
+        EmployeeID: userData[x]['Employee ID'],
+        EmployeeName: userData[x]['Employee Name'],
+        Date: userData[x].Date,
+        Day: userData[x].Day,
+        PunchInTime: userData[x]['Punch In Time'],
+        PunchOutTime: userData[x]['Punch Out Time'],
+        Status: userData[x].Status,
+        WorkingHrs: userData[x]['Working Hrs.'],
+        BreakHrs: userData[x]['Break Hrs.'],
+        HourlyRate: userData[x]['Hourly Rate'],
+        penaltyRate: userData[x]['Penalty Rate'],
+        DailySalary: DailySalary,
+      };
+    }
+
+    await User.insertMany(userData);
+    fs.unlinkSync(filePath); // Remove file after processing
+    res.status(200).json({ success: true, msg: 'File imported successfully' });
+  } catch (error) {
+    res.status(400).json({ success: false, msg: error.message });
+  }
+};
 
 module.exports = {
-    importUser
-}
+  importUser,
+};
