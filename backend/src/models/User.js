@@ -29,16 +29,24 @@ var userSchema = new mongoose.Schema({
     BreakHrs:{
         type:String
     },
-    HourlyRate:{
-        type:Number,
-        default:100,
-    },
-    penaltyRate:{
-        type:Number,
-        default:10,
-    },
-    DailySalary:{
+    // HourlyRate:{
+    //     type:Number,
+    //     default:100,
+    // },
+    // penaltyRate:{
+    //     type:Number,
+    //     default:10,
+    // },
+    Salary:{
         type: Number,
+        default:0,
+    },
+    GrossSalary:{
+        type:Number,
+        default:0,
+    },
+    DayCount:{
+        type:Number,
         default:0,
     }
 });

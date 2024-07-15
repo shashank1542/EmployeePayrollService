@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import moment from 'moment';
 import './App.css';
-const backendUrl= "https://employeepayrollservice-2.onrender.com";
-// const backendUrl= "http://localhost:3003";
-// require("../../backend/index")
+
+// const backendUrl = "https://employeepayrollservice-2.onrender.com";
+const backendUrl = "http://localhost:3003";
+
 function App() {
   const [search, setSearch] = useState('');
   const [users, setUsers] = useState([]);
@@ -56,6 +57,31 @@ function App() {
     }
   };
 
+  const handleDownloadData = async () => {
+    try {
+      const response = await axios.get(`${backendUrl}/downloadData`, {
+        responseType: 'blob', // Ensure response type is blob
+      });
+  
+      // Create a blob from the response data
+      const blob = new Blob([response.data], { type: 'text/csv' });
+  
+      // Create a URL for the blob
+      const url = URL.createObjectURL(blob);
+  
+      // Create a link element and trigger the download
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'usersData.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('There was an error downloading the CSV data!', error);
+    }
+  };
+  
+
   return (
     <div className="App">
       <h1>PayRoll</h1>
@@ -63,6 +89,7 @@ function App() {
         <input type="file" onChange={handleFileChange} />
         <button type="submit">Upload Excel</button>
       </form>
+      <button onClick={handleDownloadData}>Download Data</button>
       <input
         type="text"
         value={search}
@@ -74,16 +101,11 @@ function App() {
           <tr>
             <th>Employee ID</th>
             <th>Employee Name</th>
-            <th>Date</th>
-            <th>Day</th>
-            <th>Punch In Time</th>
-            <th>Punch Out Time</th>
-            <th>Status</th>
             <th>Working Hrs</th>
             <th>Break Hrs</th>
-            <th>Hourly Rate</th>
-            <th>Penalty Rate</th>
-            <th>Daily Salary</th>
+            <th>Gross Salary</th>
+            <th>Salary</th>
+            <th>Day Count</th>
           </tr>
         </thead>
         <tbody>
@@ -91,16 +113,11 @@ function App() {
             <tr key={user.EmployeeID}>
               <td>{user.EmployeeID}</td>
               <td>{user.EmployeeName}</td>
-              <td>{user.Date}</td>
-              <td>{user.Day}</td>
-              <td>{user.PunchInTime}</td>
-              <td>{user.PunchOutTime}</td>
-              <td>{user.Status}</td>
               <td>{user.WorkingHrs}</td>
               <td>{user.BreakHrs}</td>
-              <td>{user.HourlyRate}</td>
-              <td>{user.penaltyRate}</td>
-              <td>{user.DailySalary}</td>
+              <td>{user.GrossSalary}</td>
+              <td>{user.Salary}</td>
+              <td>{user.DayCount}</td>
             </tr>
           ))}
         </tbody>
