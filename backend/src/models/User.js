@@ -48,6 +48,9 @@ var userSchema = new mongoose.Schema({
     DayCount:{
         type:Number,
         default:0,
+    },
+    MobileNo:{
+        type:String,
     }
 });
 

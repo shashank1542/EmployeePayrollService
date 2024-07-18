@@ -1,11 +1,17 @@
 .App {
+  background-image: url('./assets/2.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed; /* This makes the background image fixed */
+  width: fit-content;
+  height: fit-content; /* Make sure it covers the full height of the viewport */
   text-align: center;
 }
 
 input {
-  margin: 20px;
+  margin: 30px;
   padding: 10px;
-  width: 300px;
+  width: 500px;
 }
 
 table {
@@ -15,7 +21,8 @@ table {
 }
 
 th, td {
-  padding: 10px;
+  font-size: large;
+  padding: 20px;
   border: 1px solid #ccc;
 }
 

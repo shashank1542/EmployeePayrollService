@@ -3,6 +3,9 @@ import axios from 'axios';
 import moment from 'moment';
 import './App.css';
 
+import backgroundImage from './assets/2.jpg'; // Import your image
+
+
 // const backendUrl = "https://employeepayrollservice-2.onrender.com";
 const backendUrl = "http://localhost:3003";
 
@@ -83,7 +86,13 @@ function App() {
   
 
   return (
-    <div className="App">
+    <div className="App" style={{ 
+      backgroundImage: `url(${backgroundImage})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundAttachment: 'fixed', /* This makes the background image fixed */
+      minHeight: '1000vh' // Ensure it covers the full height of the viewport
+    }}>
       <h1>PayRoll</h1>
       <form onSubmit={handleFileUpload}>
         <input type="file" onChange={handleFileChange} />
@@ -101,11 +110,14 @@ function App() {
           <tr>
             <th>Employee ID</th>
             <th>Employee Name</th>
+            <th>Mobile No</th>
             <th>Working Hrs</th>
             <th>Break Hrs</th>
             <th>Gross Salary</th>
             <th>Salary</th>
             <th>Day Count</th>
+            <th>First Punch</th>
+            <th>Last Punch</th>
           </tr>
         </thead>
         <tbody>
@@ -113,11 +125,15 @@ function App() {
             <tr key={user.EmployeeID}>
               <td>{user.EmployeeID}</td>
               <td>{user.EmployeeName}</td>
+              <td>{user.MobileNo}</td>
               <td>{user.WorkingHrs}</td>
               <td>{user.BreakHrs}</td>
               <td>{user.GrossSalary}</td>
               <td>{user.Salary}</td>
               <td>{user.DayCount}</td>
+              <td>{user.PunchInTime}</td>
+              <td>{user.PunchOutTime}</td>
+    
             </tr>
           ))}
         </tbody>
