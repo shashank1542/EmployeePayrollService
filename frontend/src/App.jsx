@@ -3,7 +3,7 @@ import axios from 'axios';
 import moment from 'moment';
 import './App.css';
 
-import backgroundImage from './assets/2.jpg'; // Import your image
+import backgroundImage from './assets/3.jpg'; // Import your image
 
 
 const backendUrl = "https://employeepayrollservice-2.onrender.com";
