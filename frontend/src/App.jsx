@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import moment from 'moment';
+
 import './App.css';
 
 import backgroundImage from './assets/3.jpg'; // Import your image
@@ -42,6 +43,7 @@ function App() {
 
   const handleFileUpload = async (e) => {
     e.preventDefault();
+
     const formData = new FormData();
     formData.append('file', file);
 
@@ -60,30 +62,22 @@ function App() {
     }
   };
 
-  const handleDownloadData = async () => {
+  const handleDownload = async () => {
     try {
-      const response = await axios.get(`${backendUrl}/downloadData`, {
-        responseType: 'blob', // Ensure response type is blob
+      const response = await axios.get(`${backendUrl}/download`, {
+        responseType: 'blob',
       });
-  
-      // Create a blob from the response data
-      const blob = new Blob([response.data], { type: 'text/csv' });
-  
-      // Create a URL for the blob
-      const url = URL.createObjectURL(blob);
-  
-      // Create a link element and trigger the download
+      const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', 'usersData.csv');
+      link.setAttribute('download', 'users.csv');
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     } catch (error) {
-      console.error('There was an error downloading the CSV data!', error);
+      console.error('There was an error downloading the data!', error);
     }
   };
-  
 
   return (
     <div className="App" style={{ 
@@ -97,8 +91,9 @@ function App() {
       <form onSubmit={handleFileUpload}>
         <input type="file" onChange={handleFileChange} />
         <button type="submit">Upload Excel</button>
+        
       </form>
-      <button onClick={handleDownloadData}>Download Data</button>
+      <button onClick={handleDownload}>Download Data</button>
       <input
         type="text"
         value={search}

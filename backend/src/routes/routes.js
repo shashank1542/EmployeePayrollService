@@ -2,6 +2,8 @@ const express = require("express");
 const user = express();
 const User = require('../models/User');
 const cors = require('cors');
+const XLSX = require('xlsx');
+
 user.use(cors());
 
 const multer = require('multer');
@@ -23,8 +25,10 @@ var uploads = multer({ storage: storage });
 
 const userController = require('../controllers/userController');
 
-user.post('/importUser', uploads.single('file'), userController.importUser);
+user.get('/download', userController.downloadData);
 
+
+user.post('/importUser', uploads.single('file'), userController.importUser);
 user.get('/importUser', async (req, res) => {
     try {
         const users = await User.find({});
@@ -77,5 +81,9 @@ user.get('/:Id', async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 });
+
+
+
+
 
 module.exports = user;
